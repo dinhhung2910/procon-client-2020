@@ -1,0 +1,37 @@
+{
+  "name": "procon-client",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dinhhung2910/procon-client-2020.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dinhhung2910/procon-client-2020/issues"
+  },
+  "homepage": "https://github.com/dinhhung2910/procon-client-2020#readme",
+  "dependencies": {
+    "axios": "^0.21.0",
+    "concurrently": "^5.3.0",
+    "config": "^3.3.2",
+    "express": "^4.17.1",
+    "express-validator": "^6.7.0",
+    "lodash": "^4.17.20",
+    "lowdb": "^1.0.0",
+    "nodemon": "^2.0.6",
+    "request": "^2.88.2",
+    "uuid": "^8.3.1",
+    "winston": "^3.3.3"
+  },
+  "devDependencies": {
+    "eslint": "^7.14.0",
+    "eslint-config-google": "^0.14.0"
+  }
+}
