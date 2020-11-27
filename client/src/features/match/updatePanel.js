@@ -1,6 +1,6 @@
 import React from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {selectMatch, selectMatchStagingMoves,
+import {selectCurrentSelectedAgent, selectMatch, selectMatchStagingMoves,
   selectUpdateMessage,
   updateMatchActions,
   updateStagingMoves} from './matchSlice';
@@ -61,9 +61,11 @@ function UpdateAgent(props) {
   const {agentID} = props;
   // const
   const stagingMoves = useSelector(selectMatchStagingMoves);
+  const currentAgent = useSelector(selectCurrentSelectedAgent);
 
   const dispatch = useDispatch();
   const agentStatus = stagingMoves.find((en) => en.agentID == agentID) || {};
+  const isSelected = (currentAgent.id == agentID);
 
   const onChange = (e) => {
     dispatch(updateStagingMoves({
@@ -74,10 +76,22 @@ function UpdateAgent(props) {
     ));
   };
 
+  let badge = null;
+  switch (agentStatus.type) {
+  case (MoveTypes.MOVE):
+    badge = (<span className="badge badge-success">MOVE</span>); break;
+  case (MoveTypes.STAY):
+    badge = (<span className="badge badge-warning">STAY</span>); break;
+  case (MoveTypes.REMOVE):
+    badge = (<span className="badge badge-danger">REMOVE</span>); break;
+  default:
+    badge = (<span className="badge badge-success">MOVE</span>); break;
+  }
+
   return (
-    <tr>
+    <tr className={isSelected ? 'row-selected' : ''}>
       <td>
-        {agentID}
+        {agentID}&emsp;{badge}
       </td>
       <td>
         <Form.Control

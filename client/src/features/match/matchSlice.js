@@ -23,6 +23,10 @@ export const matchSlice = createSlice({
       type: 'none',
       message: '',
     },
+    selectedAgent: {
+      index: -1,
+      id: -1,
+    },
   },
   reducers: {
     matchLoaded: (state, action) => {
@@ -32,7 +36,7 @@ export const matchSlice = createSlice({
       try {
         blueTeam = action.payload.detail.teams.find((t) =>
           t.teamID == action.payload.detail.teamID,
-        );
+        ) || {agents: []};
         redTeam = action.payload.detail.teams.find((t) =>
           t.teamID != action.payload.detail.teamID,
         );
@@ -54,6 +58,10 @@ export const matchSlice = createSlice({
             type: MoveTypes.MOVE,
           }));
           state.stagingMoves = stagingMoves;
+          state.selectedAgent = {
+            index: -1,
+            id: -1,
+          };
         }
       } catch (e) {
         console.warn(e);
@@ -112,6 +120,34 @@ export const matchSlice = createSlice({
         message: '',
       };
     },
+    selectNextAgent: (state) => {
+      const agentNum = state.detail.blueTeam.agents.length;
+      if (agentNum == 0) {
+        return state.selectedAgent = {
+          index: -1,
+          id: -1,
+        };
+      }
+      const nextAgentIndex = (state.selectedAgent.index + 1) % agentNum;
+      state.selectedAgent = {
+        index: nextAgentIndex,
+        id: state.detail.blueTeam.agents[nextAgentIndex].agentID,
+      };
+    },
+    selectPreviousAgent: (state) => {
+      const agentNum = state.detail.blueTeam.agents.length;
+      if (agentNum == 0) {
+        return state.selectedAgent = {
+          index: -1,
+          id: -1,
+        };
+      }
+      const nextIndex = (state.selectedAgent.index + agentNum - 1) % agentNum;
+      state.selectedAgent = {
+        index: nextIndex,
+        id: state.detail.blueTeam.agents[nextIndex].agentID,
+      };
+    },
   },
 });
 
@@ -122,6 +158,8 @@ export const {
   updateAllStagingMoves,
   setUpdateMessage,
   clearUpdateMessage,
+  selectNextAgent,
+  selectPreviousAgent,
 } = matchSlice.actions;
 
 // THUNKS
@@ -181,5 +219,7 @@ export const selectMatchDetail = (state) => state.match.detail;
 export const selectMatchStatus = (state) => state.match.status;
 export const selectMatchStagingMoves = (state) => state.match.stagingMoves;
 export const selectUpdateMessage = (state) => state.match.updateMessage;
+export const selectCurrentSelectedAgent = (state) =>
+  state.match.selectedAgent;
 
 export default matchSlice.reducer;

@@ -7,8 +7,8 @@ export default function ScoreBoard() {
   const status = useSelector(selectMatchStatus);
   const dispatch = useDispatch();
 
-  const blueTeam = match.blueTeam;
-  const redTeam = match.redTeam;
+  const blueTeam = match.blueTeam || {};
+  const redTeam = match.redTeam || {};
 
   const statusTextClass = '';
   const bluePoint = blueTeam.tilePoint + blueTeam.areaPoint;

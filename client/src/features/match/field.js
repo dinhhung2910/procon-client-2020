@@ -1,7 +1,10 @@
 /* eslint-disable react/prop-types */
 import React, {Fragment, useEffect} from 'react';
 import {useSelector} from 'react-redux';
-import {selectMatch, selectMatchStagingMoves} from './matchSlice';
+import {
+  selectCurrentSelectedAgent,
+  selectMatch,
+  selectMatchStagingMoves} from './matchSlice';
 import fieldStyles from './field.module.scss';
 
 function Field() {
@@ -52,11 +55,13 @@ function FieldRow(props) {
 
 function FieldCell(props) {
   const match = useSelector(selectMatch).detail;
-  const blueTeam = match.blueTeam || {};
-  const redTeam = match.redTeam || {};
+  const blueTeam = match.blueTeam || {agents: []};
+  const redTeam = match.redTeam || {agents: []};
   const walls = match.obstacles || [];
   const treasures = match.treasure || [];
   const stagingMoves = useSelector(selectMatchStagingMoves);
+  const selectedAgent = useSelector(selectCurrentSelectedAgent);
+
 
   const {
     row,
@@ -69,11 +74,12 @@ function FieldCell(props) {
   const isBlue = (blueTeam.teamID === tiledValue);
   const isRed = (redTeam.teamID === tiledValue);
   const isStaging = stagingMoves.find((en) => en.x == column && en.y == row);
-
   const currentAgent = (
     blueTeam.agents.find((en) => en.x == column && en.y == row) ||
     redTeam.agents.find((en) => en.x == column && en.y == row)
   );
+  const isSelected = !currentAgent ? false :
+    (currentAgent.agentID == selectedAgent.id);
 
   // check if this cell has treasure
   // and if it is occupied by any team?
@@ -96,6 +102,7 @@ function FieldCell(props) {
       (isBlue ? (' ' + fieldStyles['field-cell-blue']) : '') +
       (isRed ? (' ' + fieldStyles['field-cell-red']) : '') +
       (isStaging ? (' ' + fieldStyles['field-cell-staging']) : '') +
+      (isSelected ? (' ' + fieldStyles['field-cell-selected']) : '') +
       (currentAgent ? (' ' + fieldStyles['field-cell-current']) : '')
     }>
       {!isWall ? (

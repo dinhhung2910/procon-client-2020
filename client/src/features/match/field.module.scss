@@ -56,6 +56,11 @@
       }
     }
 
+    &.field-cell-selected {
+      border-radius: 4px;
+      box-shadow: 0px 0px 0px 10px #cec932;
+      transition: 0.2s;
+    }
     .sub-cell-row {
       display: flex;
       font-size: 13px;
