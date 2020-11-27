@@ -1,9 +1,8 @@
 import React, {Fragment} from 'react';
-import PropTypes from 'prop-types';
 import ScoreBoard from './scoreBoard';
 import Field from './field';
 
-function MatchDetail(props) {
+function MatchDetail() {
   return (
     <Fragment>
       <div>
@@ -16,8 +15,4 @@ function MatchDetail(props) {
   );
 }
 
-MatchDetail.propTypes = {
-  'match': PropTypes.object.isRequired,
-  'match.params.code': PropTypes.number,
-};
 export default MatchDetail;

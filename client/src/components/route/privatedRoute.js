@@ -18,7 +18,7 @@ function PrivatedRoute(props) {
 }
 
 PrivatedRoute.propTypes = {
-  component: PropTypes.object,
+  component: PropTypes.any,
 };
 
 export default PrivatedRoute;

@@ -8,6 +8,7 @@ import {
   updateStatus,
   selectMatchDetail} from '../../features/match/matchSlice';
 import UpdatePanel from '../../features/match/updatePanel';
+import KeyboardHandler from '../../features/match/keyboardHandler';
 
 function Match(props) {
   const code = props.match.params.code;
@@ -79,6 +80,7 @@ function Match(props) {
         <title>{`Match ${matchDetail.id} | ${matchDetail.matchTo}`}
         </title>
       </ReactHelmet>
+      <KeyboardHandler />
       <div className="container-fluid">
         <div className="row mt-2">
           <div className="col-md-8">

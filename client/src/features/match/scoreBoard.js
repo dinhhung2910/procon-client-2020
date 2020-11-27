@@ -11,6 +11,8 @@ export default function ScoreBoard() {
   const redTeam = match.redTeam;
 
   const statusTextClass = '';
+  const bluePoint = blueTeam.tilePoint + blueTeam.areaPoint;
+  const redPoint = redTeam.tilePoint + redTeam.areaPoint;
 
   return (
     <div className="container">
@@ -21,7 +23,7 @@ export default function ScoreBoard() {
               Team {blueTeam.teamID}
             </div>
             <div className="h1 text-bold">
-              {blueTeam.tilePoint + blueTeam.areaPoint}
+              {isNaN(bluePoint) ? 'N/A' : bluePoint}
             </div>
           </div>
         </div>
@@ -54,7 +56,7 @@ export default function ScoreBoard() {
               Team {redTeam.teamID}
             </div>
             <div className="h1 text-bold">
-              {redTeam.tilePoint + redTeam.areaPoint}
+              {isNaN(redPoint) ? 'N/A' : redPoint}
             </div>
           </div>
         </div>

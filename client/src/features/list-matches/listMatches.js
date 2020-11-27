@@ -31,7 +31,7 @@ function ListMatches() {
             </tr>
           </thead>
           <tbody id="form-list-client-body">
-            {matches.list.map((item) => (<Row data={item} key={item.code}/>))}
+            {matches.list.map((item) => (<Row data={item} key={item.id}/>))}
           </tbody>
         </table>
       </form>
