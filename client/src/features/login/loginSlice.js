@@ -93,9 +93,13 @@ export const login = ({token}) => async (dispatch) => {
     await dispatch(loginSuccess(res.data));
     await dispatch(loadUser());
   } catch (err) {
-    const errors = err.response ?
-      err.response.data.errors.map((en) => en.msg): [];
-    console.log(errors);
+    console.log(err.response);
+    const errors = (err.response && err.response.data) ?
+      (err.response.data.errors ?
+        err.response.data.errors.map((en) => en.msg):
+        [err.response.data]) :
+      [];
+
     await dispatch(removeAuth());
     await dispatch(setErrors({errors}));
   }
