@@ -2,6 +2,7 @@ import {createSlice} from '@reduxjs/toolkit';
 import setAuthToken from '../../utils/setAuthToken';
 import axios from 'axios';
 import {MoveTypes} from '../../utils/constants';
+import {v4 as uuid} from 'uuid';
 
 export const matchSlice = createSlice({
   name: 'match',
@@ -20,10 +21,7 @@ export const matchSlice = createSlice({
     stagingMoves: [],
     loaded: false,
     code: -1,
-    updateMessage: {
-      type: 'none',
-      message: '',
-    },
+    updateMessage: [],
     selectedAgent: {
       index: -1,
       id: -1,
@@ -122,16 +120,18 @@ export const matchSlice = createSlice({
       });
     },
     setUpdateMessage: (state, action) => {
-      state.updateMessage = {
-        type: action.payload.type,
-        message: action.payload.message,
-      };
+      state.updateMessage = [
+        ...state.updateMessage,
+        {
+          id: action.payload.id,
+          type: action.payload.type,
+          message: action.payload.message,
+        },
+      ];
     },
-    clearUpdateMessage: (state) => {
-      state.updateMessage = {
-        type: 'none',
-        message: '',
-      };
+    clearUpdateMessage: (state, action) => {
+      state.updateMessage = state.updateMessage.filter((en) =>
+        en.id != action.payload);
     },
     selectNextAgent: (state) => {
       const agentNum = state.detail.blueTeam.agents.length;
@@ -208,22 +208,25 @@ export const updateMatchActions = (matchID, actions) => async (dispatch) => {
   const body = {
     actions,
   };
+  const messageId = uuid();
   try {
     await axios.post('/api/matches/' + matchID + '/action',
       JSON.stringify(body),
       config);
     dispatch(setUpdateMessage({
+      id: messageId,
       type: 'success',
       message: 'Updated success',
     }));
   } catch (error) {
     dispatch(setUpdateMessage({
-      type: 'error',
+      id: messageId,
+      type: 'danger',
       message: error.message,
     }));
   }
   setTimeout(() => {
-    dispatch(clearUpdateMessage());
+    dispatch(clearUpdateMessage(messageId));
   }, 5000);
 };
 

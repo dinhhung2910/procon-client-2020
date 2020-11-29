@@ -29,12 +29,17 @@ function UpdatePanel() {
         </div>
       </div>
 
-      {updateMessage.type != 'none' ?
-        (<div className="col-sm-12 mt-2">
-          <div className="alert alert-warning">
-            {updateMessage.message}
-          </div>
-        </div>) : null}
+      {
+        updateMessage.map((en) => {
+          return (
+            <div className="col-sm-12 mt-2" key={en.id}>
+              <div className={`alert alert-${en.type}`}>
+                {en.message}
+              </div>
+            </div>
+          );
+        })
+      }
 
       <div className="col-sm-12 mt-1">
         <Table striped bordered hover>
