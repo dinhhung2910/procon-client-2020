@@ -6,6 +6,7 @@ const axios = require('axios');
 
 const server = config.get('server');
 const db = require('../../config/db');
+const {solveRandom} = require('../../utils/solver');
 
 // @route GET api/auth/
 // @desc  Get current logged in user
@@ -144,6 +145,22 @@ router.post('/:id/action', async (req, res) => {
   } catch (e) {
     logger.error(e);
     console.log(e.message);
+    res.status(500).send('Server error');
+  }
+});
+
+/**
+ * @description Solve a map
+ * execute locally
+ */
+router.post('/solve', async (req, res) => {
+  try {
+    const agents = req.body.agents;
+    const result = await solveRandom({agents});
+    res.json(result);
+  } catch (err) {
+    logger.error(err);
+    console.log(err.message);
     res.status(500).send('Server error');
   }
 });

@@ -5,7 +5,7 @@
 ### User defines ###
 config/default.json
 config/database.json
-
+*.out
 
 ### Node ###
 # Logs
