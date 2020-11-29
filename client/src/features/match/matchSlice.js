@@ -11,6 +11,7 @@ export const matchSlice = createSlice({
         agents: [],
       },
       redTeam: {},
+      tiled: [[]],
     },
     status: {
       type: 'none',
@@ -85,19 +86,31 @@ export const matchSlice = createSlice({
       const agentCurrent = state.detail.blueTeam.agents.find((en) =>
         en.agentID == action.payload.agentID) || {};
 
-      if (action.payload.type == MoveTypes.STAY) {
-        agentStaging.dx = 0;
-        agentStaging.dy = 0;
-        agentStaging.x = agentCurrent.x;
-        agentStaging.y = agentCurrent.y;
+      if (action.payload.dx == 0 && action.payload.dy ==0) {
+        agentStaging.type = MoveTypes.STAY;
       } else {
-        agentStaging.dx = action.payload.dx;
-        agentStaging.dy = action.payload.dy;
-        agentStaging.x = agentCurrent.x + action.payload.dx;
-        agentStaging.y = agentCurrent.y + action.payload.dy;
-      }
+        const x = agentCurrent.x + action.payload.dx;
+        const y = agentCurrent.y + action.payload.dy;
+        // check if move or remove
 
-      agentStaging.type = action.payload.type;
+        if (state.detail.tiled[y-1] != undefined &&
+          state.detail.tiled[x-1] != undefined) {
+          switch (state.detail.tiled[y-1][x-1]) {
+          case 0:
+          case state.detail.teamID:
+            agentStaging.type = MoveTypes.MOVE;
+            break;
+          default:
+            agentStaging.type = MoveTypes.REMOVE;
+            break;
+          }
+        }
+        agentStaging.x = x;
+        agentStaging.y = y;
+      }
+      // update
+      agentStaging.dx = action.payload.dx;
+      agentStaging.dy = action.payload.dy;
     },
     updateAllStagingMoves: (state) => {
       state.detail.blueTeam.agents.forEach((agent) => {
@@ -206,7 +219,7 @@ export const updateMatchActions = (matchID, actions) => async (dispatch) => {
   } catch (error) {
     dispatch(setUpdateMessage({
       type: 'error',
-      message: error,
+      message: error.message,
     }));
   }
   setTimeout(() => {

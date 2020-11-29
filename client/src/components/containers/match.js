@@ -21,7 +21,7 @@ function Match(props) {
     const interval = setInterval(() => {
       _loop++;
       setLoop(_loop);
-    }, 1000);
+    }, 200);
     return () => {
       clearInterval(interval);
     };
@@ -72,6 +72,16 @@ function Match(props) {
 
   useEffect(() => {
     dispatch(loadMatchByCode(code));
+  }, []);
+
+  // refetch each 2000ms
+  useEffect(() => {
+    const _interval = setInterval(() => {
+      dispatch(loadMatchByCode(code));
+    }, 2000);
+    return () => {
+      clearInterval(_interval);
+    };
   }, []);
 
   return (

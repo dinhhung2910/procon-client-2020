@@ -38,23 +38,37 @@ function KeyboardHandler() {
       break;
     }
     case ' ': {
-      let nextType = MoveTypes.MOVE;
+      let nextType = agent.type;
+      let dx = agent.dx;
+      let dy = agent.dy;
+
       switch (agent.type) {
-      case MoveTypes.MOVE: nextType = MoveTypes.REMOVE; break;
-      case MoveTypes.REMOVE: nextType = MoveTypes.STAY; break;
-      case MoveTypes.STAY: nextType = MoveTypes.MOVE; break;
+      case MoveTypes.MOVE:
+      case MoveTypes.REMOVE:
+        dx = 0;
+        dy = 0;
+        nextType = MoveTypes.STAY; break;
+      case MoveTypes.STAY:
+        dx = 0;
+        dy = 1;
+        break;
       default: nextType = MoveTypes.MOVE; break;
       }
       dispatch(updateStagingMoves({
         ...agent,
+        dx,
+        dy,
         type: nextType,
       }));
+      e.preventDefault();
       break;
     }
 
     // MOVE KEYS
 
-    case 'ArrowUp': {
+    case 'ArrowUp':
+    case 'w':
+    {
       const dy = Math.max(agent.dy - 1, -1);
       dispatch(updateStagingMoves({
         ...agent,
@@ -63,7 +77,9 @@ function KeyboardHandler() {
       e.preventDefault();
       break;
     }
-    case 'ArrowDown': {
+    case 'ArrowDown':
+    case 's':
+    {
       const dy = Math.min(agent.dy + 1, 1);
       dispatch(updateStagingMoves({
         ...agent,
@@ -72,7 +88,9 @@ function KeyboardHandler() {
       e.preventDefault();
       break;
     }
-    case 'ArrowLeft': {
+    case 'ArrowLeft':
+    case 'a':
+    {
       const dx = Math.max(agent.dx - 1, -1);
       dispatch(updateStagingMoves({
         ...agent,
@@ -81,7 +99,9 @@ function KeyboardHandler() {
       e.preventDefault();
       break;
     }
-    case 'ArrowRight': {
+    case 'ArrowRight':
+    case 'd':
+    {
       const dx = Math.min(agent.dx + 1, 1);
       dispatch(updateStagingMoves({
         ...agent,
@@ -106,6 +126,7 @@ function KeyboardHandler() {
     }
 
     default: {
+      // console.log(e);
     }
     }
   };

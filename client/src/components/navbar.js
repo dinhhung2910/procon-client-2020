@@ -35,6 +35,12 @@ function NavigationBar() {
           </NavDropdown> */}
         </Nav>
         <Nav>
+          <Nav.Link href="/help" target="_blank">
+            <i className="far fa-question-circle"></i>
+            {' Help'}
+          </Nav.Link>
+        </Nav>
+        <Nav>
           <Nav.Link onClick={(e) => {
             dispatch(logout());
           }}

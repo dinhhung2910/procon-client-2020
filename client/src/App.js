@@ -12,6 +12,7 @@ import NavigationBar from './components/navbar';
 import PrivatedRoute from './components/route/privatedRoute';
 import Home from './components/containers/home';
 import Match from './components/containers/match';
+import Help from './components/containers/help';
 
 function App() {
   const dispatch = useDispatch();
@@ -41,6 +42,7 @@ const DefaultComponent = (props) => {
       <NavigationBar />
       <Switch>
         <Route path="/" exact component={Home} />
+        <Route path="/help" exact component={Help} />
         <Route path="/matches" exact component={Matches}></Route>
         <Route path="/matches/:code" exact component={Match} />
       </Switch>
