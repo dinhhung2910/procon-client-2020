@@ -1,9 +1,14 @@
 import React from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {selectCurrentSelectedAgent, selectMatch, selectMatchStagingMoves,
+import {
+  selectCurrentSelectedAgent,
+  selectMatch,
+  selectMatchStagingMoves,
   selectUpdateMessage,
   updateMatchActions,
-  updateStagingMoves} from './matchSlice';
+  updateStagingMoves,
+  solveRandom,
+} from './matchSlice';
 import {Form, Table} from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import {MoveTypes} from '../../utils/constants';
@@ -18,6 +23,11 @@ function UpdatePanel() {
     dispatch(updateMatchActions(matchID, matchStagingMoves));
   };
 
+  const solveRandomAction = () => {
+    dispatch(solveRandom({
+      agents: matchStagingMoves,
+    }));
+  };
   return (
     <div className="row">
       <div className="col-sm-12">
@@ -26,20 +36,12 @@ function UpdatePanel() {
             <i className="far fa-edit"></i>
             {' Update'}
           </a>
+          <a className="btn btn-info ml-1" onClick={solveRandomAction}>
+            <i className="far fa-edit"></i>
+            {' Random'}
+          </a>
         </div>
       </div>
-
-      {
-        updateMessage.map((en) => {
-          return (
-            <div className="col-sm-12 mt-2" key={en.id}>
-              <div className={`alert alert-${en.type}`}>
-                {en.message}
-              </div>
-            </div>
-          );
-        })
-      }
 
       <div className="col-sm-12 mt-1">
         <Table striped bordered hover>
@@ -57,6 +59,17 @@ function UpdatePanel() {
           </tbody>
         </Table>
 
+        {
+          updateMessage.map((en) => {
+            return (
+              <div className="col-sm-12 mt-2" key={en.id}>
+                <div className={`alert alert-${en.type}`}>
+                  {en.message}
+                </div>
+              </div>
+            );
+          })
+        }
       </div>
     </div>
   );

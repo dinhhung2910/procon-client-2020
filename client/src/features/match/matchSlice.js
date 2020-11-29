@@ -121,12 +121,12 @@ export const matchSlice = createSlice({
     },
     setUpdateMessage: (state, action) => {
       state.updateMessage = [
-        ...state.updateMessage,
         {
           id: action.payload.id,
           type: action.payload.type,
           message: action.payload.message,
         },
+        ...state.updateMessage,
       ];
     },
     clearUpdateMessage: (state, action) => {
@@ -208,26 +208,62 @@ export const updateMatchActions = (matchID, actions) => async (dispatch) => {
   const body = {
     actions,
   };
-  const messageId = uuid();
+
   try {
     await axios.post('/api/matches/' + matchID + '/action',
       JSON.stringify(body),
       config);
-    dispatch(setUpdateMessage({
-      id: messageId,
+    dispatch(addMessage({
       type: 'success',
       message: 'Updated success',
     }));
   } catch (error) {
-    dispatch(setUpdateMessage({
-      id: messageId,
+    dispatch(addMessage({
       type: 'danger',
       message: error.message,
     }));
   }
+};
+
+export const addMessage = (data) => (dispatch) => {
+  const messageId = uuid();
+  dispatch(setUpdateMessage({
+    id: messageId,
+    type: data.type,
+    message: data.message,
+  }));
   setTimeout(() => {
     dispatch(clearUpdateMessage(messageId));
-  }, 5000);
+  }, 2000);
+};
+
+export const solveRandom = ({agents}) => async (dispatch) => {
+  const config = {
+    headers: {'Content-Type': 'application/json'},
+  };
+  const body = {
+    agents,
+  };
+
+  try {
+    const result = await axios.post('/api/matches/solve',
+      JSON.stringify(body),
+      config);
+    const data = await result.data;
+    data.forEach((en) => {
+      dispatch(updateStagingMoves(en));
+    });
+
+    dispatch(addMessage({
+      type: 'info',
+      message: 'Solved randomly',
+    }));
+  } catch (error) {
+    dispatch(addMessage({
+      type: 'danger',
+      message: error.message,
+    }));
+  }
 };
 
 export const selectMatch = (state) => state.match;

@@ -8,6 +8,7 @@ import {
   selectMatchStagingMoves,
   selectNextAgent,
   selectPreviousAgent,
+  solveRandom,
   updateMatchActions,
   updateStagingMoves,
 } from './matchSlice';
@@ -123,6 +124,11 @@ function KeyboardHandler() {
     case 'Enter': {
       dispatch(updateMatchActions(match.code, stagingMoves));
       break;
+    }
+
+    // RANDOMLY SOLVE
+    case 'z': {
+      dispatch(solveRandom({agents: stagingMoves}));
     }
 
     default: {
