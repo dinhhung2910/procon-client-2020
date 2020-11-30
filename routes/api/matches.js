@@ -86,11 +86,40 @@ router.get('/:id', async (req, res) => {
     };
 
     try {
-      let match = await axios.get(
-        `${server}/matches/${req.params.id}`,
-        config,
-      );
-      match = match.data;
+      const current = new Date().getTime();
+      // get saved match from db
+      const savedMatch = db
+        .get('matches')
+        .find({id: parseInt(req.params.id)})
+        .cloneDeep()
+        .value();
+
+      let match = {};
+
+      // only fetch from server if this match not existed in db
+      // or this match is too old
+      if (!savedMatch || savedMatch.lastUpdate < current - 1500) {
+        match = await axios.get(
+          `${server}/matches/${req.params.id}`,
+          config,
+        );
+        match = match.data;
+        match.id = parseInt(req.params.id);
+        match.lastUpdate = current;
+
+        // save to db
+        if (!savedMatch) {
+          db.get('matches').push(match).write();
+        } else {
+          db
+            .get('matches')
+            .find({id: parseInt(req.params.id)})
+            .assign(match)
+            .write();
+        }
+      } else {
+        match = savedMatch;
+      }
 
       const existedMatch = db
         .get(token)

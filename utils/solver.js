@@ -45,7 +45,7 @@ const solvePython = (data) => {
     const childProcess = spawn('python3',
       [
         // eslint-disable-next-line max-len
-        path.resolve(global.__basedir, 'utils', 'procon_interative', 'main.py' ),
+        path.resolve(global.__basedir, 'utils', 'ProCon_Interactive', 'main.py' ),
         '--file_name',
         file,
       ],
