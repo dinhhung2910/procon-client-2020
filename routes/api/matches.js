@@ -6,7 +6,7 @@ const axios = require('axios');
 
 const server = config.get('server');
 const db = require('../../config/db');
-const {solveRandom} = require('../../utils/solver');
+const {solveRandom, solvePython} = require('../../utils/solver');
 
 // @route GET api/auth/
 // @desc  Get current logged in user
@@ -157,6 +157,18 @@ router.post('/solve', async (req, res) => {
   try {
     const agents = req.body.agents;
     const result = await solveRandom({agents});
+    res.json(result);
+  } catch (err) {
+    logger.error(err);
+    console.log(err.message);
+    res.status(500).send('Server error');
+  }
+});
+
+router.post('/solve-python', async (req, res) => {
+  try {
+    const data = req.body.data;
+    const result = await solvePython(data);
     res.json(result);
   } catch (err) {
     logger.error(err);

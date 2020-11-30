@@ -1,4 +1,5 @@
 const path = require('path');
+const generateInput = require('./generateInput');
 
 /**
  * randomly generate output
@@ -18,7 +19,6 @@ const solveRandom = (data) => {
 
     childProcess.stdout.on('data', function(data) {
       // process returned data
-      console.log(data.toString());
       const result = data.toString().split(' ').map((en) => parseInt(en));
 
       const agents = [];
@@ -37,6 +37,40 @@ const solveRandom = (data) => {
   });
 };
 
+const solvePython = (data) => {
+  return new Promise(function(resolve, reject) {
+    const file = generateInput(data);
+
+    const {spawn} = require('child_process');
+    const childProcess = spawn('python3',
+      [
+        // eslint-disable-next-line max-len
+        path.resolve(global.__basedir, 'utils', 'procon_interative', 'main.py' ),
+        '--file_name',
+        file,
+      ],
+    );
+
+    childProcess.stdout.on('data', function(data) {
+      // process returned data
+      console.log(data.toString());
+      const result = JSON.parse(data.toString());
+      console.log(result);
+
+      const agents = result.map((en) => {
+        return {
+          agentID: en[0],
+          dy: en[1][0],
+          dx: en[1][1],
+        };
+      });
+
+      resolve(agents);
+    });
+  });
+};
+
 module.exports = {
   solveRandom,
+  solvePython,
 };

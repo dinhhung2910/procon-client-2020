@@ -5,9 +5,11 @@ import {
   selectMatch,
   selectMatchStagingMoves,
   selectUpdateMessage,
+  selectMatchDetail,
   updateMatchActions,
   updateStagingMoves,
   solveRandom,
+  solvePython,
 } from './matchSlice';
 import {Form, Table} from 'react-bootstrap';
 import PropTypes from 'prop-types';
@@ -18,6 +20,7 @@ function UpdatePanel() {
   const matchID = useSelector(selectMatch).code;
   const dispatch = useDispatch();
   const updateMessage = useSelector(selectUpdateMessage);
+  const matchDetail = useSelector(selectMatchDetail);
 
   const update = () => {
     dispatch(updateMatchActions(matchID, matchStagingMoves));
@@ -28,6 +31,22 @@ function UpdatePanel() {
       agents: matchStagingMoves,
     }));
   };
+
+  const solvePythonAction = () => {
+    dispatch(solvePython({
+      points: matchDetail.points,
+      width: parseInt(matchDetail.width),
+      height: parseInt(matchDetail.height),
+      treasure: matchDetail.treasure,
+      obstacles: matchDetail.obstacles,
+      thisAgents: matchDetail.blueTeam.agents,
+      thatAgents: matchDetail.redTeam.agents,
+      tiled: matchDetail.tiled,
+      teamID: matchDetail.teamID,
+      turn: matchDetail.turns - matchDetail.turn,
+    }));
+  };
+
   return (
     <div className="row">
       <div className="col-sm-12">
@@ -37,8 +56,16 @@ function UpdatePanel() {
             {' Update'}
           </a>
           <a className="btn btn-info ml-1" onClick={solveRandomAction}>
-            <i className="far fa-edit"></i>
+            <i className="far fa-dice"></i>
             {' Random'}
+          </a>
+          <a className="btn btn-info ml-1" onClick={solvePythonAction}>
+            <i className="far fa-star"></i>
+            {' Smart'}
+          </a>
+          <a className="btn btn-info ml-1" onClick={solvePythonAction}>
+            <i className="far fa-head-side-brain"></i>
+            {' More smart'}
           </a>
         </div>
       </div>

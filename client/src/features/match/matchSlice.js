@@ -266,6 +266,35 @@ export const solveRandom = ({agents}) => async (dispatch) => {
   }
 };
 
+export const solvePython = (data) => async (dispatch) => {
+  const config = {
+    headers: {'Content-Type': 'application/json'},
+  };
+  const body = {
+    data,
+  };
+
+  try {
+    const result = await axios.post('/api/matches/solve-python',
+      JSON.stringify(body),
+      config);
+    const data = await result.data;
+    data.forEach((en) => {
+      dispatch(updateStagingMoves(en));
+    });
+
+    dispatch(addMessage({
+      type: 'info',
+      message: 'Solved randomly',
+    }));
+  } catch (error) {
+    dispatch(addMessage({
+      type: 'danger',
+      message: error.message,
+    }));
+  }
+};
+
 export const selectMatch = (state) => state.match;
 export const selectMatchDetail = (state) => state.match.detail;
 export const selectMatchStatus = (state) => state.match.status;

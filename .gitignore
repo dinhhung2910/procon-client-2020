@@ -6,6 +6,7 @@
 config/default.json
 config/database.json
 *.out
+utils/maps/*
 
 ### Node ###
 # Logs

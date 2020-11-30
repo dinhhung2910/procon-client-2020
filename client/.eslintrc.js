@@ -18,8 +18,6 @@ module.exports = {
     'react',
   ],
   'rules': {
-    'require-jsdoc': 0,
-    'linebreak-style': 0,
     'babel/new-cap': 0,
     'new-cap': [0, {'newIsCap': false, 'capIsNew': false}],
     'no-console': 'off',
@@ -30,5 +28,7 @@ module.exports = {
     'indent': ['error', 2],
     // we want to avoid useless spaces
     'no-multi-spaces': ['error'],
+    'linebreak-style': 0,
+    'require-jsdoc': 0,
   },
 };
