@@ -42,13 +42,15 @@ const solvePython = (data) => {
     const file = generateInput(data);
 
     const {spawn} = require('child_process');
+    const params = [
+      // eslint-disable-next-line max-len
+      path.resolve(global.__basedir, 'utils', 'ProCon_Interactive', 'main.py' ),
+      '--file_name',
+      file,
+    ];
+
     const childProcess = spawn('python3',
-      [
-        // eslint-disable-next-line max-len
-        path.resolve(global.__basedir, 'utils', 'ProCon_Interactive', 'main.py' ),
-        '--file_name',
-        file,
-      ],
+      params,
     );
 
     childProcess.stdout.on('data', function(data) {

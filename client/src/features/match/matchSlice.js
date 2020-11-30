@@ -1,8 +1,9 @@
 import {createSlice} from '@reduxjs/toolkit';
 import setAuthToken from '../../utils/setAuthToken';
 import axios from 'axios';
-import {MoveTypes} from '../../utils/constants';
+import {MoveTypes, SolveMethod} from '../../utils/constants';
 import {v4 as uuid} from 'uuid';
+// import store from '../../app/store';
 
 export const matchSlice = createSlice({
   name: 'match',
@@ -25,6 +26,11 @@ export const matchSlice = createSlice({
     selectedAgent: {
       index: -1,
       id: -1,
+    },
+    solver: {
+      solving: false,
+      method: localStorage.getItem('solveMethod') || SolveMethod.NONE,
+      autoPlay: localStorage.getItem('autoPlay') == 'true' || false,
     },
   },
   reducers: {
@@ -161,6 +167,21 @@ export const matchSlice = createSlice({
         id: state.detail.blueTeam.agents[nextIndex].agentID,
       };
     },
+
+    setSolving: (state) => {
+      state.solver.solving = true;
+    },
+    clearSolving: (state) => {
+      state.solver.solving = false;
+    },
+    setSolveMethod: (state, action) => {
+      state.solver.method = action.payload;
+      localStorage.setItem('solveMethod', action.payload);
+    },
+    setAutoPlay: (state, action) => {
+      state.solver.autoPlay = action.payload;
+      localStorage.setItem('autoPlay', action.payload);
+    },
   },
 });
 
@@ -173,6 +194,10 @@ export const {
   clearUpdateMessage,
   selectNextAgent,
   selectPreviousAgent,
+  setSolving,
+  clearSolving,
+  setSolveMethod,
+  setAutoPlay,
 } = matchSlice.actions;
 
 // THUNKS
@@ -188,13 +213,37 @@ export const loadMatchByCode = (code) => async (dispatch) => {
   }
 
   try {
+    const store = await import('../../app/store');
+    const oldMatch = store.default.getState().match;
+
     const res = await axios.get('/api/matches/' + code);
+    let needGenerateNewMoves = false;
+    // check if new turn
+    if (oldMatch.detail.turn != res.data.turn) {
+      // auto generate new move
+      needGenerateNewMoves = true;
+    }
+
     dispatch(matchLoaded({detail: res.data}));
+
     setTimeout(() => {
       dispatch(updateAllStagingMoves());
     }, 100);
+    if (needGenerateNewMoves) {
+      setTimeout(async () => {
+        await dispatch(applyMoves(oldMatch.solver.method));
+        // check if autp play
+        if (oldMatch.solver.autoPlay) {
+          dispatch(updateMatchActions(
+            oldMatch.detail.id,
+            oldMatch.stagingMoves),
+          );
+        }
+      }, 100);
+    }
   } catch (error) {
     // dispatch(removeAuth());
+    console.error(error);
   }
 };
 
@@ -246,6 +295,7 @@ export const solveRandom = ({agents}) => async (dispatch) => {
   };
 
   try {
+    dispatch(setSolving());
     const result = await axios.post('/api/matches/solve',
       JSON.stringify(body),
       config);
@@ -263,6 +313,49 @@ export const solveRandom = ({agents}) => async (dispatch) => {
       type: 'danger',
       message: error.message,
     }));
+  } finally {
+    dispatch(clearSolving());
+  }
+};
+
+/**
+ * @param {SolveMethod} method solver method
+ * @param {*} match match detail
+ * @return {*}
+ */
+export const applyMoves = (method) => async (dispatch) => {
+  const store = await import('../../app/store');
+  const match = store.default.getState().match.detail;
+  switch (parseInt(method)) {
+  case (SolveMethod.NONE): {
+    const result = match.blueTeam.agents.map((en) => ({
+      agentID: en.agentID,
+      dx: 0,
+      dy: 0,
+    }));
+    result.forEach((en) => dispatch(updateStagingMoves(en)));
+    break;
+  }
+  case (SolveMethod.RANDOM): {
+    await dispatch(solveRandom({
+      agents: match.blueTeam.agents,
+    }));
+    break;
+  }
+  case (SolveMethod.SMART): {
+    await dispatch(solvePython({
+      points: match.points,
+      width: parseInt(match.width),
+      height: parseInt(match.height),
+      treasure: match.treasure,
+      obstacles: match.obstacles,
+      thisAgents: match.blueTeam.agents,
+      thatAgents: match.redTeam.agents,
+      tiled: match.tiled,
+      teamID: match.teamID,
+      turn: match.turns - match.turn,
+    }));
+  }
   }
 };
 
@@ -274,7 +367,12 @@ export const solvePython = (data) => async (dispatch) => {
     data,
   };
 
+  if (!data.turn) {
+    return;
+  }
+
   try {
+    dispatch(setSolving());
     const result = await axios.post('/api/matches/solve-python',
       JSON.stringify(body),
       config);
@@ -285,14 +383,25 @@ export const solvePython = (data) => async (dispatch) => {
 
     dispatch(addMessage({
       type: 'info',
-      message: 'Solved randomly',
+      message: 'Solved smartly',
     }));
   } catch (error) {
     dispatch(addMessage({
       type: 'danger',
       message: error.message,
     }));
+  } finally {
+    dispatch(clearSolving());
   }
+};
+
+export const test = (data) => async (dispatch) => {
+  // console.log(store);
+  const store = await import('../../app/store');
+  const time = store.default.getState().match.detail.lastUpdate;
+  console.log(store);
+  console.log(time);
+  console.log(data);
 };
 
 export const selectMatch = (state) => state.match;
@@ -302,5 +411,6 @@ export const selectMatchStagingMoves = (state) => state.match.stagingMoves;
 export const selectUpdateMessage = (state) => state.match.updateMessage;
 export const selectCurrentSelectedAgent = (state) =>
   state.match.selectedAgent;
+export const selectMatchSolver = (state) => state.match.solver;
 
 export default matchSlice.reducer;

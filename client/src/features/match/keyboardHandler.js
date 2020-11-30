@@ -5,9 +5,11 @@ import {
   loadMatchByCode,
   selectCurrentSelectedAgent,
   selectMatch,
+  selectMatchDetail,
   selectMatchStagingMoves,
   selectNextAgent,
   selectPreviousAgent,
+  solvePython,
   solveRandom,
   updateMatchActions,
   updateStagingMoves,
@@ -23,6 +25,7 @@ function KeyboardHandler() {
   const selectedAgent = useSelector(selectCurrentSelectedAgent);
   const stagingMoves = useSelector(selectMatchStagingMoves);
   const match = useSelector(selectMatch);
+  const matchDetail = useSelector(selectMatchDetail);
 
   const agent = stagingMoves.find((en) => en.agentID == selectedAgent.id) || {};
 
@@ -129,6 +132,22 @@ function KeyboardHandler() {
     // RANDOMLY SOLVE
     case 'z': {
       dispatch(solveRandom({agents: stagingMoves}));
+    }
+
+    // SMART 1 SOLVE
+    case 'x': {
+      dispatch(solvePython({
+        points: matchDetail.points,
+        width: parseInt(matchDetail.width),
+        height: parseInt(matchDetail.height),
+        treasure: matchDetail.treasure,
+        obstacles: matchDetail.obstacles,
+        thisAgents: matchDetail.blueTeam.agents,
+        thatAgents: matchDetail.redTeam.agents,
+        tiled: matchDetail.tiled,
+        teamID: matchDetail.teamID,
+        turn: matchDetail.turns - matchDetail.turn,
+      }));
     }
 
     default: {

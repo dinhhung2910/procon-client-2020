@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Fragment} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {
   selectCurrentSelectedAgent,
@@ -10,10 +10,15 @@ import {
   updateStagingMoves,
   solveRandom,
   solvePython,
+  selectMatchSolver,
+  setSolveMethod,
+  setAutoPlay,
 } from './matchSlice';
-import {Form, Table} from 'react-bootstrap';
+import {Form, Table, Col} from 'react-bootstrap';
 import PropTypes from 'prop-types';
-import {MoveTypes} from '../../utils/constants';
+import {MoveTypes, SolveMethod} from '../../utils/constants';
+import Spinning from '../../assets/images/Ellipsis-1s-37px.svg';
+
 
 function UpdatePanel() {
   const matchStagingMoves = useSelector(selectMatchStagingMoves);
@@ -69,6 +74,8 @@ function UpdatePanel() {
           </a>
         </div>
       </div>
+
+      <SolverManager />
 
       <div className="col-sm-12 mt-1">
         <Table striped bordered hover>
@@ -182,5 +189,64 @@ function UpdateAgent(props) {
 UpdateAgent.propTypes = {
   agentID: PropTypes.number.isRequired,
 };
+
+function SolverManager(props) {
+  // const dispatch = useDispatch();
+  const solver = useSelector(selectMatchSolver);
+  const dispatch = useDispatch();
+
+  return (
+    <Fragment>
+      <div className="col-sm-12 mt-1 mb-1">
+        <Form>
+          <Form.Row className="align-items-center">
+            <Col xs="auto" className="my-1 mt-auto">
+              <Form.Label
+                className="mt-auto"
+                htmlFor="inlineFormCustomSelect">
+                Default method
+              </Form.Label>
+            </Col>
+            <Col xs="auto" className="my-1">
+              <Form.Control
+                as="select"
+                id="inlineFormCustomSelect"
+                value={solver.method}
+                onChange={(e) =>
+                  dispatch(setSolveMethod(parseInt(e.target.value)))}
+                custom
+              >
+                <option value={SolveMethod.NONE}>None</option>
+                <option value={SolveMethod.RANDOM}>Random</option>
+                <option value={SolveMethod.SMART}>Smart</option>
+              </Form.Control>
+            </Col>
+            <Col xs="auto" className="my-1">
+              <Form.Check
+                type="checkbox"
+                id="customControlAutosizing"
+                label="Autoplay"
+                checked={solver.autoPlay}
+                onChange={(e) => dispatch(setAutoPlay(e.target.checked))}
+                custom
+              />
+            </Col>
+          </Form.Row>
+        </Form>
+      </div>
+
+      <div className="col-sm-12 mt-1 mb-1 text-center solving">
+        {solver.solving ?
+          <span>
+            <img src={Spinning} alt="spinning"/>
+          &ensp;Solving
+          </span> :
+          (<span>&ensp;</span>) }
+      </div>
+    </Fragment>
+
+
+  );
+}
 
 export default UpdatePanel;

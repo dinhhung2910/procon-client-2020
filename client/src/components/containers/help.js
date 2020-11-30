@@ -29,6 +29,12 @@ function Help() {
             <li>
               <p><kbd>Enter</kbd>: Gửi dữ liệu lên server </p>
             </li>
+            <li>
+              <p><kbd>z</kbd>: Solve random </p>
+            </li>
+            <li>
+              <p><kbd>x</kbd>: Solve smart </p>
+            </li>
           </ul>
         </main>
       </div>

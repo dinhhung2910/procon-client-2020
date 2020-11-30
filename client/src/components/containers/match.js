@@ -34,7 +34,7 @@ function Match(props) {
         matchDetail.turns *
         (matchDetail.turnMillis + matchDetail.intervalMillis);
     const current = new Date().getTime();
-    console.log('end', endTime);
+
     if (current > endTime) {
       dispatch(updateStatus({
         'type': 'ended',
