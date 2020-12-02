@@ -234,9 +234,11 @@ export const loadMatchByCode = (code) => async (dispatch) => {
         await dispatch(applyMoves(oldMatch.solver.method));
         // check if autp play
         if (oldMatch.solver.autoPlay) {
+          const _store = await import('../../app/store');
+          const _newMatch = _store.default.getState().match;
           dispatch(updateMatchActions(
             oldMatch.detail.id,
-            oldMatch.stagingMoves),
+            _newMatch.stagingMoves),
           );
         }
       }, 100);

@@ -55,9 +55,7 @@ const solvePython = (data) => {
 
     childProcess.stdout.on('data', function(data) {
       // process returned data
-      console.log(data.toString());
       const result = JSON.parse(data.toString());
-      console.log(result);
 
       const agents = result.map((en) => {
         return {
