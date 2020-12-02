@@ -224,11 +224,10 @@ export const loadMatchByCode = (code) => async (dispatch) => {
       needGenerateNewMoves = true;
     }
 
-    dispatch(matchLoaded({detail: res.data}));
+    await dispatch(matchLoaded({detail: res.data}));
 
-    setTimeout(() => {
-      dispatch(updateAllStagingMoves());
-    }, 100);
+    await dispatch(updateAllStagingMoves());
+
     if (needGenerateNewMoves) {
       setTimeout(async () => {
         await dispatch(applyMoves(oldMatch.solver.method));
