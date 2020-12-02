@@ -37,7 +37,7 @@ const solveRandom = (data) => {
   });
 };
 
-const solvePython = (data) => {
+const solvePython = (data, type = 2) => {
   return new Promise(function(resolve, reject) {
     const file = generateInput(data);
 
@@ -47,6 +47,8 @@ const solvePython = (data) => {
       path.resolve(global.__basedir, 'utils', 'ProCon_Interactive', 'main.py' ),
       '--file_name',
       file,
+      '--type',
+      type,
     ];
 
     const childProcess = spawn('python3',

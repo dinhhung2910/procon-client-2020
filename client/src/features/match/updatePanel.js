@@ -37,7 +37,7 @@ function UpdatePanel() {
     }));
   };
 
-  const solvePythonAction = () => {
+  const solvePythonAction = (type) => {
     dispatch(solvePython({
       points: matchDetail.points,
       width: parseInt(matchDetail.width),
@@ -49,7 +49,7 @@ function UpdatePanel() {
       tiled: matchDetail.tiled,
       teamID: matchDetail.teamID,
       turn: matchDetail.turns - matchDetail.turn,
-    }));
+    }, type));
   };
 
   return (
@@ -64,11 +64,11 @@ function UpdatePanel() {
             <i className="far fa-dice"></i>
             {' Random'}
           </a>
-          <a className="btn btn-info ml-1" onClick={solvePythonAction}>
+          <a className="btn btn-info ml-1" onClick={() => solvePythonAction(2)}>
             <i className="far fa-star"></i>
             {' Smart'}
           </a>
-          <a className="btn btn-info ml-1" onClick={solvePythonAction}>
+          <a className="btn btn-info ml-1" onClick={() => solvePythonAction(1)}>
             <i className="far fa-head-side-brain"></i>
             {' More smart'}
           </a>
@@ -219,6 +219,7 @@ function SolverManager(props) {
                 <option value={SolveMethod.NONE}>None</option>
                 <option value={SolveMethod.RANDOM}>Random</option>
                 <option value={SolveMethod.SMART}>Smart</option>
+                <option value={SolveMethod.MORE_SMART}>More smart</option>
               </Form.Control>
             </Col>
             <Col xs="auto" className="my-1">

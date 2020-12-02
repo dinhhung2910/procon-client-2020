@@ -194,10 +194,22 @@ router.post('/solve', async (req, res) => {
   }
 });
 
-router.post('/solve-python', async (req, res) => {
+router.post('/solve-smart', async (req, res) => {
   try {
     const data = req.body.data;
-    const result = await solvePython(data);
+    const result = await solvePython(data, 2);
+    res.json(result);
+  } catch (err) {
+    logger.error(err);
+    console.log(err.message);
+    res.status(500).send('Server error');
+  }
+});
+
+router.post('/solve-more-smart', async (req, res) => {
+  try {
+    const data = req.body.data;
+    const result = await solvePython(data, 1);
     res.json(result);
   } catch (err) {
     logger.error(err);

@@ -29,8 +29,8 @@ export const matchSlice = createSlice({
     },
     solver: {
       solving: false,
-      method: localStorage.getItem('solveMethod') || SolveMethod.NONE,
-      autoPlay: localStorage.getItem('autoPlay') == 'true' || false,
+      method: localStorage.getItem('solveMethod') || SolveMethod.MORE_SMART,
+      autoPlay: localStorage.getItem('autoPlay') == 'true' || true,
     },
   },
   reducers: {
@@ -121,8 +121,10 @@ export const matchSlice = createSlice({
         const agentStaging = state.stagingMoves.find((en) =>
           en.agentID == agent.agentID) || {};
 
-        agentStaging.x = agent.x + agentStaging.dx;
-        agentStaging.y = agent.y + agentStaging.dy;
+        agentStaging.x = agent.x;
+        agentStaging.y = agent.y;
+        agentStaging.dx = 0;
+        agentStaging.dy = 0;
       });
     },
     setUpdateMessage: (state, action) => {
@@ -226,9 +228,9 @@ export const loadMatchByCode = (code) => async (dispatch) => {
 
     await dispatch(matchLoaded({detail: res.data}));
 
-    await dispatch(updateAllStagingMoves());
 
     if (needGenerateNewMoves) {
+      await dispatch(updateAllStagingMoves());
       setTimeout(async () => {
         await dispatch(applyMoves(oldMatch.solver.method));
         // check if autp play
@@ -355,12 +357,28 @@ export const applyMoves = (method) => async (dispatch) => {
       tiled: match.tiled,
       teamID: match.teamID,
       turn: match.turns - match.turn,
-    }));
+    }, 2));
+    break;
+  }
+  case (SolveMethod.MORE_SMART): {
+    await dispatch(solvePython({
+      points: match.points,
+      width: parseInt(match.width),
+      height: parseInt(match.height),
+      treasure: match.treasure,
+      obstacles: match.obstacles,
+      thisAgents: match.blueTeam.agents,
+      thatAgents: match.redTeam.agents,
+      tiled: match.tiled,
+      teamID: match.teamID,
+      turn: match.turns - match.turn,
+    }, 1));
+    break;
   }
   }
 };
 
-export const solvePython = (data) => async (dispatch) => {
+export const solvePython = (data, type = 2) => async (dispatch) => {
   const config = {
     headers: {'Content-Type': 'application/json'},
   };
@@ -372,9 +390,12 @@ export const solvePython = (data) => async (dispatch) => {
     return;
   }
 
+  const url = (type == 1 ? '/api/matches/solve-more-smart' :
+    '/api/matches/solve-smart');
+
   try {
     dispatch(setSolving());
-    const result = await axios.post('/api/matches/solve-python',
+    const result = await axios.post(url,
       JSON.stringify(body),
       config);
     const data = await result.data;

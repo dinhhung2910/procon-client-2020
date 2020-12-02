@@ -1,3 +1,3 @@
 {   
-    "ignore": ["config/database.json", "client/*"] 
+    "ignore": ["config/database.json", "client/*", "utils/maps/*"] 
 }

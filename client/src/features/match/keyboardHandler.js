@@ -147,7 +147,24 @@ function KeyboardHandler() {
         tiled: matchDetail.tiled,
         teamID: matchDetail.teamID,
         turn: matchDetail.turns - matchDetail.turn,
-      }));
+      }, 2));
+    }
+
+
+    // MORE SMART
+    case 'c': {
+      dispatch(solvePython({
+        points: matchDetail.points,
+        width: parseInt(matchDetail.width),
+        height: parseInt(matchDetail.height),
+        treasure: matchDetail.treasure,
+        obstacles: matchDetail.obstacles,
+        thisAgents: matchDetail.blueTeam.agents,
+        thatAgents: matchDetail.redTeam.agents,
+        tiled: matchDetail.tiled,
+        teamID: matchDetail.teamID,
+        turn: matchDetail.turns - matchDetail.turn,
+      }, 1));
     }
 
     default: {
