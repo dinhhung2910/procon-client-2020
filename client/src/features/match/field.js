@@ -4,20 +4,33 @@ import {useSelector} from 'react-redux';
 import {
   selectCurrentSelectedAgent,
   selectMatch,
-  selectMatchStagingMoves} from './matchSlice';
+  selectMatchStagingMoves,
+  selectMatchStatus} from './matchSlice';
 import fieldStyles from './field.module.scss';
+import {ProgressBar} from 'react-bootstrap';
 
 function Field() {
   const match = useSelector(selectMatch).detail;
+  const status = useSelector(selectMatchStatus);
+
   const {height, width} = match;
   const rows = [];
 
   for (let i = 0; i <height; i++) {
     rows.push(<FieldRow row={i+1} key={i+1} width={width}/>);
   }
+  const progressValue = (status.type != 'turn' ?
+    100 :
+    status.remaining / match.turnMillis * 100);
 
   return (
     <div>
+      <div className="field-progress-bar-container" style={{
+        width: width*50+'px',
+      }}>
+        <ProgressBar now={progressValue} />
+      </div>
+
       <table className={fieldStyles['field-table']}>
         <tbody>
           {rows}
