@@ -22,3 +22,19 @@
     align-items: center;
     justify-content: center;
 }
+
+.field-messages {
+  margin-bottom: 10px;
+    min-height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row-reverse;
+
+  .badge {
+    margin-left: 2px;
+    margin-right: 2px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+  }
+}

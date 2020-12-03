@@ -1,10 +1,17 @@
 import React from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {loadMatchByCode, selectMatch, selectMatchStatus} from './matchSlice';
+import {
+  loadMatchByCode,
+  selectMatch,
+  selectMatchStatus,
+  selectUpdateMessage,
+} from './matchSlice';
 
 export default function ScoreBoard() {
   const match = useSelector(selectMatch).detail;
   const status = useSelector(selectMatchStatus);
+  const updateMessages = useSelector(selectUpdateMessage);
+
   const dispatch = useDispatch();
 
   const blueTeam = match.blueTeam || {};
@@ -13,6 +20,7 @@ export default function ScoreBoard() {
   const statusTextClass = '';
   const bluePoint = blueTeam.tilePoint + blueTeam.areaPoint;
   const redPoint = redTeam.tilePoint + redTeam.areaPoint;
+
 
   return (
     <div className="container">
@@ -45,6 +53,20 @@ export default function ScoreBoard() {
                 status.type != 'ended' ?
                   `:   ${parseInt(status.remaining / 1000)}s` :
                   ''
+              }
+            </div>
+            <div className="field-messages">
+              {
+                updateMessages.map((en) => {
+                  return (
+                    <span
+                      key={en.id}
+                      className={`badge badge-xs badge-${en.type}`}
+                    >
+                      <i className="far fa-info-circle"></i>
+                    </span>
+                  );
+                })
               }
             </div>
           </div>
