@@ -46,6 +46,12 @@ router.post('/', async (req, res) => {
         db.set(token, []).write();
       }
 
+      // remove deleted match
+      const matchIds = matches.map((en) => en.id);
+      db.get(token)
+        .remove((en) => !matchIds.includes(en.id))
+        .write();
+
       // token is the key for each team database
       matches.forEach((match) => {
         // check if match is existed?

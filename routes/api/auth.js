@@ -71,7 +71,11 @@ router.get('/', async (req, res) => {
 
         res.json(user);
       } catch (e) {
-        res.status(e.response.status).send(e.response.data.message);
+        if (e.response && e.response.data) {
+          res.status(e.response.status).send(e.response.data.message);
+        } else {
+          res.status(401).send('No authorization');
+        }
       }
     } catch (e) {
       // Something went wrong
