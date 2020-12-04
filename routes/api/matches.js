@@ -99,12 +99,30 @@ router.get('/:id', async (req, res) => {
         .find({id: parseInt(req.params.id)})
         .cloneDeep()
         .value();
+      const existedMatch = db
+        .get(token)
+        .find({id: parseInt(req.params.id)})
+        .cloneDeep()
+        .value();
 
       let match = {};
+      let needRefresh = false;
 
+      if (!savedMatch) {
+        needRefresh = true;
+      } else {
+        const fullTurnTime = existedMatch.intervalMillis +
+          existedMatch.turnMillis;
+        const nextTurn = savedMatch.startedAtUnixTime +
+          (savedMatch.turn + 2) * fullTurnTime - existedMatch.intervalMillis;
+        if (nextTurn - current < 0 && current - savedMatch.lastUpdate > 1500) {
+          needRefresh = true;
+        }
+      }
       // only fetch from server if this match not existed in db
       // or this match is too old
-      if (!savedMatch || savedMatch.lastUpdate < current - 1500) {
+      // or in interval time
+      if (needRefresh) {
         match = await axios.get(
           `${server}/matches/${req.params.id}`,
           config,
@@ -127,17 +145,15 @@ router.get('/:id', async (req, res) => {
         match = savedMatch;
       }
 
-      const existedMatch = db
-        .get(token)
-        .find({id: parseInt(req.params.id)})
-        .cloneDeep()
-        .value();
-
       match = Object.assign(match, existedMatch);
 
       return res.json(match);
     } catch (e) {
-      console.log(e);
+      if (e.response && e.response.status == 429) {
+        console.log('Get match: too many requests', req.params.id);
+      } else {
+        console.log(e);
+      }
       res.status(e.response.status).send(e.response.data.message);
     }
   } catch (e) {
@@ -174,7 +190,12 @@ router.post('/:id/action', async (req, res) => {
       );
       return res.json('ok');
     } catch (e) {
-      console.log(e);
+      // console.log(e);
+      if (e.response && e.response.status == 429) {
+        console.log('Update actions: too many requests');
+      } else {
+        console.log(e);
+      }
       return res.status(e.response.status).send(e.response.data.message);
     }
   } catch (e) {

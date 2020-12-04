@@ -230,6 +230,7 @@ export const loadMatchByCode = (code) => async (dispatch) => {
 
 
     if (needGenerateNewMoves) {
+      console.log(new Date(res.data.startedAtUnixTime));
       await dispatch(updateAllStagingMoves());
       setTimeout(async () => {
         await dispatch(applyMoves(oldMatch.solver.method));
