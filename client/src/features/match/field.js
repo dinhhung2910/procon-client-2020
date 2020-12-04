@@ -12,8 +12,16 @@ import {ProgressBar} from 'react-bootstrap';
 function Field() {
   const match = useSelector(selectMatch).detail;
   const status = useSelector(selectMatchStatus);
+  let {height, width} = match;
+  try {
+    height = match.tiled.length;
+    width = match.tiled[0].length;
+  } catch (e) {
+    console.warn(e);
+  }
+  // const {height, width} = match;
 
-  const {height, width} = match;
+
   const rows = [];
 
   for (let i = 0; i <height; i++) {

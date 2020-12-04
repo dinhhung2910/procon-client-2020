@@ -14,6 +14,8 @@ export const matchSlice = createSlice({
       },
       redTeam: {},
       tiled: [[]],
+      width: 0,
+      height: 0,
     },
     status: {
       type: 'none',
@@ -77,6 +79,8 @@ export const matchSlice = createSlice({
         ...action.payload.detail,
         blueTeam,
         redTeam,
+        width: action.payload.detail.tiled.length,
+        height: action.payload.detail.tiled[0].length,
       };
       state.loaded = true;
       state.code = action.payload.detail.id;
