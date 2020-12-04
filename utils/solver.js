@@ -1,5 +1,5 @@
 const path = require('path');
-const generateInput = require('./generateInput');
+const {generateInput} = require('./generateInput');
 
 /**
  * randomly generate output

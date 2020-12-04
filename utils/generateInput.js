@@ -2,6 +2,24 @@ const {v4} = require('uuid');
 const fs = require('fs');
 const path = require('path');
 
+const parseFromFile = (file) => {
+  const buffer = fs.readFileSync(file);
+  const data = JSON.parse(buffer);
+
+  console.log(generateInput({
+    points: data.points,
+    tiled: data.tiled,
+    width: parseInt(data.width),
+    height: parseInt(data.height),
+    treasure: data.treasure,
+    turn: 30,
+    thisAgents: data.teams[0].agents,
+    thatAgents: data.teams[1].agents,
+    obstacles: data.obstacles,
+    teamID: 1,
+  }));
+};
+
 /**
  *
  * @param {*} data input
@@ -95,4 +113,4 @@ const generateInput = (data) => {
   return filename;
 };
 
-module.exports = generateInput;
+module.exports = {generateInput, parseFromFile};

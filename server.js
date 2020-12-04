@@ -3,6 +3,7 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const bodyParser = require('body-parser');
+const {parseFromFile} = require('./utils/generateInput');
 
 const PORT = process.env.PORT || 5000;
 
@@ -10,8 +11,10 @@ const server = app.listen(PORT, () => {
   console.log(`Server is listening at port ${PORT}`);
 });
 
-
 global.__basedir = __dirname;
+
+
+// parseFromFile('/mnt/d/Dinh Hung/Documents/Workings/Procon 2020/procon-client-2020/test-map.json');
 
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
@@ -40,3 +43,4 @@ app.get('*', (req, res) => {
     __dirname, 'client', 'build', 'index.html'),
   );
 });
+
