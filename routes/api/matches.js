@@ -164,11 +164,26 @@ router.get('/:id', async (req, res) => {
 });
 
 /**
- * @description Update action for match
+ * @return {Promise}
+ * @param {Number} id Match id
+ * @param {String} token User's token
+ * @param {*} data actions
+ * @param {*} tried number of times tried
  */
-router.post('/:id/action', async (req, res) => {
-  try {
-    const token = req.header('x-auth-token');
+function tryPostAction(id, token, data, tried = 0) {
+  const status429 = {
+    response: {
+      status: 429,
+      data: {
+        message: 'Too many request',
+      },
+    },
+  };
+  return new Promise(async (resolve, reject) => {
+    if (tried == 5) {
+      console.log(429);
+      return reject(status429);
+    }
     const config = {
       headers: {
         'token': token,
@@ -179,27 +194,45 @@ router.post('/:id/action', async (req, res) => {
       },
     };
     const body = {
-      actions: req.body.actions,
+      actions: data,
     };
 
     try {
       await axios.post(
-        `${server}/matches/${req.params.id}/action`,
+        `${server}/matches/${id}/action`,
         JSON.stringify(body),
         config,
       );
-      return res.json('ok');
+      resolve('ok');
     } catch (e) {
       // console.log(e);
       if (e.response && e.response.status == 429) {
-        console.log('Update actions: too many requests');
+        console.log('Resend in 200ms...', tried);
+        setTimeout(() => {
+          resolve(tryPostAction(id, token, data, tried + 1));
+        }, 300);
       } else {
-        console.log(e);
+        reject(e);
       }
-      return res.status(e.response.status).send(e.response.data.message);
     }
+  });
+}
+
+/**
+ * @description Update action for match
+ */
+router.post('/:id/action', async (req, res) => {
+  try {
+    const token = req.header('x-auth-token');
+
+    await tryPostAction(req.params.id, token, req.body.actions);
+    res.json('ok');
   } catch (e) {
     logger.error(e);
+    if (e.response && e.response.data) {
+      console.log(e.response.data.message);
+      return res.status(e.response.status).send(e.response.data.message);
+    }
     console.log(e.message);
     res.status(500).send('Server error');
   }
