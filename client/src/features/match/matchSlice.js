@@ -74,14 +74,17 @@ export const matchSlice = createSlice({
         console.warn(e);
       }
 
-
-      state.detail = {
+      const detail = {
         ...action.payload.detail,
         blueTeam,
         redTeam,
-        width: action.payload.detail.tiled.length,
-        height: action.payload.detail.tiled[0].length,
+        height: action.payload.detail.tiled.length,
+        width: action.payload.detail.tiled[0].length,
       };
+      console.log(detail);
+
+      state.detail = detail;
+
       state.loaded = true;
       state.code = action.payload.detail.id;
     },
