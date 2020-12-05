@@ -394,6 +394,7 @@ export const solvePython = (data, type = 2) => async (dispatch) => {
   const config = {
     headers: {'Content-Type': 'application/json'},
   };
+  const server = localStorage.getItem('solveServer');
   const body = {
     data,
   };
@@ -402,8 +403,8 @@ export const solvePython = (data, type = 2) => async (dispatch) => {
     return;
   }
 
-  const url = (type == 1 ? '/api/matches/solve-more-smart' :
-    '/api/matches/solve-smart');
+  const url = (type == 1 ? server + '/api/matches/solve-more-smart' :
+    server + '/api/matches/solve-smart');
 
   try {
     dispatch(setSolving());

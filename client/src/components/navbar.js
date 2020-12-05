@@ -35,6 +35,10 @@ function NavigationBar() {
           </NavDropdown> */}
         </Nav>
         <Nav>
+          <Nav.Link href="/settings" target="_blank">
+            <i className="far fa-cog"></i>
+            {' Settings'}
+          </Nav.Link>
           <Nav.Link href="/help" target="_blank">
             <i className="far fa-question-circle"></i>
             {' Help'}
