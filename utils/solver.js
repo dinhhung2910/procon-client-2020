@@ -39,6 +39,10 @@ const solveRandom = (data) => {
 
 const solvePython = (data, type = 2) => {
   return new Promise(function(resolve, reject) {
+    if (!data.thisAgents || !data.thisAgents.length) {
+      return resolve([]);
+    }
+
     const file = generateInput(data);
 
     const {spawn} = require('child_process');

@@ -147,6 +147,14 @@ router.get('/:id', async (req, res) => {
 
       match = Object.assign(match, existedMatch);
 
+      // In this game
+      // We always have an preparing turn
+      // We call this turn -1
+      if (current - match.startedAtUnixTime <
+        (match.turnMillis + match.intervalMillis)) {
+        match.turn = -1;
+      }
+
       return res.json(match);
     } catch (e) {
       if (e.response && e.response.status == 429) {
