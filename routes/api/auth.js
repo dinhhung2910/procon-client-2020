@@ -48,8 +48,24 @@ router.post(
   },
 );
 
+/**
+ * Get authenticated user
+ */
 router.get('/', async (req, res) => {
   try {
+    // This is the default user
+    const user = {
+      username: 'admin',
+      name: 'Admin',
+      _id: 0,
+    };
+
+    // First, check if database contain this token
+    if (db.has(token).value()) {
+      return res.json(user);
+    }
+
+    // If not, send request api to server to check if token is valid
     try {
       const token = req.header('x-auth-token');
       const config = {
@@ -63,12 +79,6 @@ router.get('/', async (req, res) => {
 
       try {
         await axios.get(`${server}/matches`, config);
-        const user = {
-          username: 'admin',
-          name: 'Admin',
-          _id: 0,
-        };
-
         res.json(user);
       } catch (e) {
         if (e.response && e.response.data) {
