@@ -6,6 +6,7 @@ const config = require('config');
 const logger = require('../../logger/winston');
 const axios = require('axios');
 const server = config.get('server');
+const db = require('../../config/db');
 
 // @route   POST api/admin/auth/
 // @desc    Log admin user in
@@ -53,6 +54,7 @@ router.post(
  */
 router.get('/', async (req, res) => {
   try {
+    const token = req.header('x-auth-token');
     // This is the default user
     const user = {
       username: 'admin',
@@ -67,7 +69,6 @@ router.get('/', async (req, res) => {
 
     // If not, send request api to server to check if token is valid
     try {
-      const token = req.header('x-auth-token');
       const config = {
         headers: {
           'token': token,
