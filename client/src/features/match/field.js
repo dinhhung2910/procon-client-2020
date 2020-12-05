@@ -92,13 +92,22 @@ function FieldCell(props) {
   } = props;
 
   const isWall = walls.find((en) => en.x == column && en.y == row);
-  const isBlue = (blueTeam.teamID === tiledValue);
-  const isRed = (redTeam.teamID === tiledValue);
+
+  // check if cell is occupied by any team
+  // In some case, an agent is still in this cell
+  // But opponent removed this agent tile
+  // So we still display that this cell is occupied by this agent
+  const currentAgentBlue =
+    blueTeam.agents.find((en) => en.x == column && en.y == row);
+  const currentAgentRed =
+    redTeam.agents.find((en) => en.x == column && en.y == row);
+  const currentAgent = currentAgentBlue || currentAgentRed;
+
+  const isBlue = (blueTeam.teamID === tiledValue) || currentAgentBlue;
+  const isRed = (redTeam.teamID === tiledValue) || currentAgentRed;
+
   const isStaging = stagingMoves.find((en) => en.x == column && en.y == row);
-  const currentAgent = (
-    blueTeam.agents.find((en) => en.x == column && en.y == row) ||
-    redTeam.agents.find((en) => en.x == column && en.y == row)
-  );
+
   const isSelected = !currentAgent ? false :
     (currentAgent.agentID == selectedAgent.id);
 
