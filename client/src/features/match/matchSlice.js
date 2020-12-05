@@ -81,7 +81,6 @@ export const matchSlice = createSlice({
         height: action.payload.detail.tiled.length,
         width: action.payload.detail.tiled[0].length,
       };
-      console.log(detail);
 
       state.detail = detail;
 
@@ -259,6 +258,11 @@ export const loadMatchByCode = (code) => async (dispatch) => {
 };
 
 export const updateMatchActions = (matchID, actions) => async (dispatch) => {
+  // undefined matchID
+  if (matchID === undefined) {
+    return;
+  }
+
   if (localStorage.token) {
     setAuthToken(localStorage.token);
   }
@@ -364,7 +368,7 @@ export const applyMoves = (method) => async (dispatch) => {
       thatAgents: match.redTeam.agents,
       tiled: match.tiled,
       teamID: match.teamID,
-      turn: match.turns - match.turn,
+      turn: match.turns - match.turn + 1,
     }, 2));
     break;
   }
@@ -379,7 +383,7 @@ export const applyMoves = (method) => async (dispatch) => {
       thatAgents: match.redTeam.agents,
       tiled: match.tiled,
       teamID: match.teamID,
-      turn: match.turns - match.turn,
+      turn: match.turns - match.turn + 1,
     }, 1));
     break;
   }

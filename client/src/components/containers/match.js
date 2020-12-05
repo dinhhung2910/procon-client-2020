@@ -29,9 +29,10 @@ function Match(props) {
 
   /* refresh map each 400ms */
   useEffect(() => {
+    // first turn is zero
     const endTime =
         matchDetail.startedAtUnixTime +
-        matchDetail.turns *
+        (matchDetail.turns + 2) *
         (matchDetail.turnMillis + matchDetail.intervalMillis);
     const current = new Date().getTime();
 

@@ -48,7 +48,7 @@ function UpdatePanel() {
       thatAgents: matchDetail.redTeam.agents,
       tiled: matchDetail.tiled,
       teamID: matchDetail.teamID,
-      turn: matchDetail.turns - matchDetail.turn,
+      turn: matchDetail.turns - matchDetail.turn + 1,
     }, type));
   };
 
