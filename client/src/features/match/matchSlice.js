@@ -63,6 +63,7 @@ export const matchSlice = createSlice({
             dx: 0,
             dy: 0,
             type: MoveTypes.MOVE,
+            isControlable: true,
           }));
           state.stagingMoves = stagingMoves;
           state.selectedAgent = {
@@ -101,8 +102,8 @@ export const matchSlice = createSlice({
       } else {
         const x = agentCurrent.x + action.payload.dx;
         const y = agentCurrent.y + action.payload.dy;
-        // check if move or remove
 
+        // check if move or remove
         if (state.detail.tiled[y-1] != undefined &&
           state.detail.tiled[x-1] != undefined) {
           switch (state.detail.tiled[y-1][x-1]) {
@@ -121,6 +122,14 @@ export const matchSlice = createSlice({
       // update
       agentStaging.dx = action.payload.dx;
       agentStaging.dy = action.payload.dy;
+
+      // trigger event
+      // only if event is controlable
+      if (agentStaging.isControlable) {
+        document.dispatchEvent(new CustomEvent('agent-moved',
+          {detail: action.payload}),
+        );
+      }
     },
     updateAllStagingMoves: (state) => {
       state.detail.blueTeam.agents.forEach((agent) => {
@@ -148,6 +157,7 @@ export const matchSlice = createSlice({
         en.id != action.payload);
     },
     selectNextAgent: (state) => {
+      // select only controlable agents
       const agentNum = state.detail.blueTeam.agents.length;
       if (agentNum == 0) {
         return state.selectedAgent = {
@@ -155,13 +165,21 @@ export const matchSlice = createSlice({
           id: -1,
         };
       }
-      const nextAgentIndex = (state.selectedAgent.index + 1) % agentNum;
+      let i = 1;
+      let nextAgentIndex = 0;
+      for (; i <= agentNum; i++) {
+        nextAgentIndex = (state.selectedAgent.index + i) % agentNum;
+        if (state.stagingMoves[nextAgentIndex].isControlable) {
+          break;
+        }
+      }
       state.selectedAgent = {
         index: nextAgentIndex,
         id: state.detail.blueTeam.agents[nextAgentIndex].agentID,
       };
     },
     selectPreviousAgent: (state) => {
+      // select only controlable agents
       const agentNum = state.detail.blueTeam.agents.length;
       if (agentNum == 0) {
         return state.selectedAgent = {
@@ -169,13 +187,26 @@ export const matchSlice = createSlice({
           id: -1,
         };
       }
-      const nextIndex = (state.selectedAgent.index + agentNum - 1) % agentNum;
+      let i = 1;
+      let nextAgentIndex = 0;
+      for (; i <= agentNum; i++) {
+        nextAgentIndex = (state.selectedAgent.index - i + agentNum) % agentNum;
+        if (state.stagingMoves[nextAgentIndex].isControlable) {
+          break;
+        }
+      }
       state.selectedAgent = {
-        index: nextIndex,
-        id: state.detail.blueTeam.agents[nextIndex].agentID,
+        index: nextAgentIndex,
+        id: state.detail.blueTeam.agents[nextAgentIndex].agentID,
       };
     },
-
+    setAgentControlable: (state, action) => {
+      const agent = state.stagingMoves.find((en) =>
+        en.agentID == action.payload.agentID);
+      if (agent) {
+        agent.isControlable = action.payload.state;
+      }
+    },
     setSolving: (state) => {
       state.solver.solving = true;
     },
@@ -206,6 +237,7 @@ export const {
   clearSolving,
   setSolveMethod,
   setAutoPlay,
+  setAgentControlable,
 } = matchSlice.actions;
 
 // THUNKS
@@ -412,8 +444,17 @@ export const solvePython = (data, type = 2) => async (dispatch) => {
       JSON.stringify(body),
       config);
     const data = await result.data;
+
+    const store = await import('../../app/store');
+    const staging = store.default.getState().match.stagingMoves;
+
+    // Can't update uncontrolable agents
+    // unless it is updated remotely
     data.forEach((en) => {
-      dispatch(updateStagingMoves(en));
+      const agent = staging.find((_a) => _a.agentID == en.agentID);
+      if (agent && agent.isControlable) {
+        dispatch(updateStagingMoves(en));
+      }
     });
 
     dispatch(addMessage({

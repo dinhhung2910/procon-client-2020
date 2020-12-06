@@ -10,6 +10,7 @@ import {
   updateStagingMoves,
   solveRandom,
   solvePython,
+  setAgentControlable,
   selectMatchSolver,
   setSolveMethod,
   setAutoPlay,
@@ -81,6 +82,7 @@ function UpdatePanel() {
         <Table striped bordered hover>
           <thead>
             <tr>
+              <th></th>
               <th>Agent ID</th>
               <th>Type</th>
               <th>dx</th>
@@ -142,6 +144,15 @@ function UpdateAgent(props) {
 
   return (
     <tr className={isSelected ? 'row-selected' : ''}>
+      <td>
+        <input
+          type="checkbox"
+          onChange={(e) => dispatch(setAgentControlable({
+            agentID: agentStatus.agentID,
+            state: !agentStatus.isControlable,
+          }))}
+          checked={agentStatus.isControlable}/>
+      </td>
       <td>
         {agentID}&emsp;{badge}
       </td>
