@@ -12,6 +12,15 @@ const server = app.listen(PORT, () => {
   console.log(`Server is listening at port ${PORT}`);
 });
 
+const io = require('socket.io')(server, {
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST'],
+  },
+});
+
+const matchSocket = require('./socket/match')(io);
+
 global.__basedir = __dirname;
 
 

@@ -91,6 +91,9 @@ export const matchSlice = createSlice({
     updateStatus: (state, action) => {
       state.status = action.payload;
     },
+    setLoadedState: (state, action) => {
+      state.loaded = action.payload;
+    },
     updateStagingMoves: (state, action) => {
       const agentStaging = state.stagingMoves.find((en) =>
         en.agentID == action.payload.agentID) || {};
@@ -235,6 +238,7 @@ export const {
   selectPreviousAgent,
   setSolving,
   clearSolving,
+  setLoadedState,
   setSolveMethod,
   setAutoPlay,
   setAgentControlable,
@@ -256,6 +260,12 @@ export const loadMatchByCode = (code) => async (dispatch) => {
     const store = await import('../../app/store');
     const oldMatch = store.default.getState().match;
 
+    // if old request is still loading
+    if (!oldMatch.loaded) {
+      return;
+    }
+
+    await dispatch(setLoadedState(false));
     const res = await axios.get('/api/matches/' + code);
     let needGenerateNewMoves = false;
     // check if new turn
@@ -286,6 +296,8 @@ export const loadMatchByCode = (code) => async (dispatch) => {
   } catch (error) {
     // dispatch(removeAuth());
     console.error(error);
+  } finally {
+    await dispatch(setLoadedState(true));
   }
 };
 
@@ -362,6 +374,17 @@ export const solveRandom = ({agents}) => async (dispatch) => {
     }));
   } finally {
     dispatch(clearSolving());
+  }
+};
+
+export const applyMoveFromSocket = (data) => async (dispatch) => {
+  const store = await import('../../app/store');
+  const staging = store.default.getState().match.stagingMoves;
+  const agent = staging.find((en) => en.agentID == data.agentID);
+
+  // only update if agent is not controlable
+  if (agent && !agent.isControlable) {
+    dispatch(updateStagingMoves(data));
   }
 };
 

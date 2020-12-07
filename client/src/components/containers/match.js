@@ -9,6 +9,7 @@ import {
   selectMatchDetail} from '../../features/match/matchSlice';
 import UpdatePanel from '../../features/match/updatePanel';
 import KeyboardHandler from '../../features/match/keyboardHandler';
+import MatchSocket from '../../features/match/matchSocket';
 
 function Match(props) {
   const code = props.match.params.code;
@@ -86,26 +87,35 @@ function Match(props) {
     };
   }, []);
 
-  return (
-    <Fragment>
-      <ReactHelmet>
-        <title>{`Match ${matchDetail.id} | ${matchDetail.matchTo}`}
-        </title>
-      </ReactHelmet>
-      <KeyboardHandler />
-      <div className="container-fluid">
-        <div className="row mt-2">
-          <div className="col-md-8">
-            <MatchDetail />
-          </div>
-          <div className="col-md-4">
-            <UpdatePanel />
+  if (matchDetail.id != code) {
+    return (
+      <div className="text-center mt-3">
+        Please wait...
+      </div>
+    );
+  } else {
+    return (
+      <Fragment>
+        <ReactHelmet>
+          <title>{`Match ${matchDetail.id} | ${matchDetail.matchTo}`}
+          </title>
+        </ReactHelmet>
+        <KeyboardHandler />
+        <MatchSocket roomId={matchDetail.id + '-' + matchDetail.teamID}/>
+        <div className="container-fluid">
+          <div className="row mt-2">
+            <div className="col-md-8">
+              <MatchDetail />
+            </div>
+            <div className="col-md-4">
+              <UpdatePanel />
+            </div>
           </div>
         </div>
-      </div>
 
-    </Fragment>
-  );
+      </Fragment>
+    );
+  }
 }
 
 Match.propTypes = {
