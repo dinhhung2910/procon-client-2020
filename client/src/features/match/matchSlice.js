@@ -449,7 +449,7 @@ export const solvePython = (data, type = 2) => async (dispatch) => {
   const config = {
     headers: {'Content-Type': 'application/json'},
   };
-  const server = localStorage.getItem('solveServer');
+  const server = localStorage.getItem('solveServer') || '';
   const body = {
     data,
   };
