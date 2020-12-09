@@ -123,6 +123,7 @@ router.get('/:id', async (req, res) => {
       // or this match is too old
       // or in interval time
       if (needRefresh) {
+        // console.log('refreshing...');
         match = await axios.get(
           `${server}/matches/${req.params.id}`,
           config,
@@ -130,6 +131,14 @@ router.get('/:id', async (req, res) => {
         match = match.data;
         match.id = parseInt(req.params.id);
         match.lastUpdate = current;
+
+        // In this game
+        // Turn 0 is error some way
+        // We will call this turn -1
+        if (current - match.startedAtUnixTime <
+        (existedMatch.turnMillis + existedMatch.intervalMillis)) {
+          match.turn = -1;
+        }
 
         // save to db
         if (!savedMatch) {
@@ -146,15 +155,7 @@ router.get('/:id', async (req, res) => {
       }
 
       match = Object.assign(match, existedMatch);
-
-      // In this game
-      // We always have an preparing turn
-      // We call this turn -1
-      if (current - match.startedAtUnixTime <
-        (match.turnMillis + match.intervalMillis)) {
-        match.turn = -1;
-      }
-
+      match.turn = Math.max(match.turn, 0);
       return res.json(match);
     } catch (e) {
       if (e.response && e.response.status == 429) {

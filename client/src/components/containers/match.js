@@ -33,7 +33,7 @@ function Match(props) {
     // first turn is zero
     const endTime =
         matchDetail.startedAtUnixTime +
-        (matchDetail.turns + 2) *
+        (matchDetail.turns + 1) *
         (matchDetail.turnMillis + matchDetail.intervalMillis);
     const current = new Date().getTime();
 
