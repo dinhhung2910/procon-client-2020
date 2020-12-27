@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/dinhhung2910/procon-client-2020#readme",
   "dependencies": {
-    "axios": "^0.21.0",
+    "axios": "^0.21.1",
     "concurrently": "^5.3.0",
     "config": "^3.3.2",
     "cors": "^2.8.5",
