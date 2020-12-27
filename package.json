@@ -18,22 +18,24 @@
   },
   "homepage": "https://github.com/dinhhung2910/procon-client-2020#readme",
   "dependencies": {
-    "axios": "^0.21.0",
+    "axios": "^0.21.1",
     "concurrently": "^5.3.0",
-    "config": "^3.3.2",
+    "config": "^3.3.3",
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "express-validator": "^6.7.0",
+    "express-validator": "^6.9.0",
     "lodash": "^4.17.20",
     "lowdb": "^1.0.0",
     "nodemon": "^2.0.6",
     "request": "^2.88.2",
-    "socket.io": "^3.0.3",
+    "socket.io": "^3.0.4",
+    "uuid": "^8.3.2",
+    "socket.io": "^3.0.4",
     "uuid": "^8.3.1",
     "winston": "^3.3.3"
   },
   "devDependencies": {
-    "eslint": "^7.14.0",
+    "eslint": "^7.16.0",
     "eslint-config-google": "^0.14.0"
   }
 }
