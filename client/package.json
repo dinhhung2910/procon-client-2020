@@ -8,7 +8,7 @@
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^13.1.9",
     "axios": "^0.21.1",
-    "bootstrap": "^5.0.1",
+    "bootstrap": "^5.0.2",
     "moment": "^2.29.1",
     "moment-timezone": "^0.5.33",
     "node-sass": "^6.0.0",
