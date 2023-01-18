@@ -20,7 +20,7 @@
   "dependencies": {
     "axios": "^0.24.0",
     "concurrently": "^6.3.0",
-    "config": "^3.3.6",
+    "config": "^3.3.9",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-validator": "^6.13.0",
